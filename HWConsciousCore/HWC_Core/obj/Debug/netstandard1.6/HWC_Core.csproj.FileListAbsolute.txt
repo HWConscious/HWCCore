@@ -1,6 +1,0 @@
-C:\Users\devop\OneDrive\Documents\Visual Studio 2017\Projects\HWConsciousCore\HWC_Core\bin\Debug\netstandard1.6\HWC_Core.deps.json
-C:\Users\devop\OneDrive\Documents\Visual Studio 2017\Projects\HWConsciousCore\HWC_Core\bin\Debug\netstandard1.6\HWC_Core.dll
-C:\Users\devop\OneDrive\Documents\Visual Studio 2017\Projects\HWConsciousCore\HWC_Core\bin\Debug\netstandard1.6\HWC_Core.pdb
-C:\Users\devop\OneDrive\Documents\Visual Studio 2017\Projects\HWConsciousCore\HWC_Core\obj\Debug\netstandard1.6\HWC_Core.AssemblyInfo.cs
-C:\Users\devop\OneDrive\Documents\Visual Studio 2017\Projects\HWConsciousCore\HWC_Core\obj\Debug\netstandard1.6\HWC_Core.dll
-C:\Users\devop\OneDrive\Documents\Visual Studio 2017\Projects\HWConsciousCore\HWC_Core\obj\Debug\netstandard1.6\HWC_Core.pdb
