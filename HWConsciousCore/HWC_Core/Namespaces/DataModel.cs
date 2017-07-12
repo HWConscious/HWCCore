@@ -20,7 +20,7 @@ namespace HWC.DataModel
     public class Client
     {
         [Key]
-        public int ClientID { get; set; }                               // PRIMARY Key
+        public long ClientID { get; set; }                              // PRIMARY Key
 
         [Required]
         [Column("Name")]
@@ -45,12 +45,12 @@ namespace HWC.DataModel
     public class ClientSpot
     {
         [Key]
-        public int ClientSpotID { get; set; }                           // PRIMARY Key
+        public long ClientSpotID { get; set; }                          // PRIMARY Key
 
         [Required]
         [ForeignKey("FK_ClientSpot_Client_ClientID")]
         [Column("ClientID")]
-        public int ClientID { get; set; }                               // FOREIGN Key to -> Client:ClientID
+        public long ClientID { get; set; }                              // FOREIGN Key to -> Client:ClientID
 
         [Required]
         [Column("Name")]
@@ -80,12 +80,12 @@ namespace HWC.DataModel
     public class Zone
     {
         [Key]
-        public int ZoneID { get; set; }                                 // PRIMARY Key
+        public long ZoneID { get; set; }                                // PRIMARY Key
 
         [Required]
         [ForeignKey("FK_Zone_ClientSpot_ClientSpotID")]
         [Column("ClientSpotID")]
-        public int ClientSpotID { get; set; }                           // FOREIGN Key to -> ClientSpot:ClientSpotID
+        public long ClientSpotID { get; set; }                          // FOREIGN Key to -> ClientSpot:ClientSpotID
 
         [Required]
         [Column("Name")]
@@ -102,16 +102,16 @@ namespace HWC.DataModel
     public class LocationDevice
     {
         [Key]
-        public int LocationDeviceID { get; set; }                       // PRIMARY Key
+        public long LocationDeviceID { get; set; }                      // PRIMARY Key
 
         [Required]
         [ForeignKey("FK_LocationDevice_ClientSpot_ClientSpotID")]
         [Column("ClientSpotID")]
-        public int ClientSpotID { get; set; }                           // FOREIGN Key to -> ClientSpot:ClientSpotID
+        public long ClientSpotID { get; set; }                          // FOREIGN Key to -> ClientSpot:ClientSpotID
 
         [ForeignKey("FK_LocationDevice_Zone_ZoneID")]
         [Column("ZoneID")]
-        public int? ZoneID { get; set; }                                // FOREIGN Key to -> Zone:ZoneID
+        public long? ZoneID { get; set; }                               // FOREIGN Key to -> Zone:ZoneID
 
         [Required]
         [EnumDataType(typeof(LocationDeviceType))]
@@ -133,16 +133,16 @@ namespace HWC.DataModel
     public class DisplayEndpoint
     {
         [Key]
-        public int DisplayEndpointID { get; set; }                      // PRIMARY Key
+        public long DisplayEndpointID { get; set; }                     // PRIMARY Key
 
         [Required]
         [ForeignKey("FK_DisplayEndpoint_ClientSpot_ClientSpotID")]
         [Column("ClientSpotID")]
-        public int ClientSpotID { get; set; }                           // FOREIGN Key to -> ClientSpot:ClientSpotID
+        public long ClientSpotID { get; set; }                          // FOREIGN Key to -> ClientSpot:ClientSpotID
 
         [ForeignKey("FK_DisplayEndpoint_Zone_ZoneID")]
         [Column("ZoneID")]
-        public int? ZoneID { get; set; }                                // FOREIGN Key to -> Zone:ZoneID
+        public long? ZoneID { get; set; }                               // FOREIGN Key to -> Zone:ZoneID
 
         [Required]
         [Column("Name")]
@@ -159,16 +159,16 @@ namespace HWC.DataModel
     public class Notification
     {
         [Key]
-        public int NotificationID { get; set; }                         // PRIMARY Key
+        public long NotificationID { get; set; }                        // PRIMARY Key
 
         [Required]
         [ForeignKey("FK_Notification_ClientSpot_ClientSpotID")]
         [Column("ClientSpotID")]
-        public int ClientSpotID { get; set; }                           // FOREIGN Key to -> ClientSpot:ClientSpotID
+        public long ClientSpotID { get; set; }                          // FOREIGN Key to -> ClientSpot:ClientSpotID
 
         [ForeignKey("FK_Notification_DisplayEndpoint_DisplayEndpointID")]
         [Column("DisplayEndpointID")]
-        public int? DisplayEndpointID { get; set; }                     // FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
+        public long? DisplayEndpointID { get; set; }                    // FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
 
         [Required]
         [Column("Name")]
@@ -217,16 +217,16 @@ namespace HWC.DataModel
     public class Coupon
     {
         [Key]
-        public int CouponID { get; set; }                               // PRIMARY Key
+        public long CouponID { get; set; }                              // PRIMARY Key
 
         [Required]
         [ForeignKey("FK_Coupon_ClientSpot_ClientSpotID")]
         [Column("ClientSpotID")]
-        public int ClientSpotID { get; set; }                           // FOREIGN Key to -> ClientSpot:ClientSpotID
+        public long ClientSpotID { get; set; }                          // FOREIGN Key to -> ClientSpot:ClientSpotID
 
         [ForeignKey("FK_Coupon_Notification_NotificationID")]
         [Column("NotificationID")]
-        public int? NotificationID { get; set; }                        // FOREIGN Key to -> Notification:NotificationID
+        public long? NotificationID { get; set; }                       // FOREIGN Key to -> Notification:NotificationID
 
         [Required]
         [Column("Name")]
@@ -258,7 +258,7 @@ namespace HWC.DataModel
     public class User
     {
         [Key]
-        public int UserID { get; set; }                                 // PRIMARY Key
+        public long UserID { get; set; }                                // PRIMARY Key
         
         [Required]
         [EnumDataType(typeof(UserType))]
@@ -285,12 +285,12 @@ namespace HWC.DataModel
         [Required]
         [ForeignKey("FK_ClientUser_Client_ClientID")]
         [Column("ClientID")]
-        public int ClientID { get; set; }                               // FOREIGN Key to -> Client:ClientID
+        public long ClientID { get; set; }                              // FOREIGN Key to -> Client:ClientID
 
         [Required]
         [ForeignKey("FK_ClientUser_User_UserID")]
         [Column("UserID")]
-        public int UserID { get; set; }                                 // FOREIGN Key to -> User:UserID
+        public long UserID { get; set; }                                // FOREIGN Key to -> User:UserID
 
         [Required]
         [Column("VisitedAt")]
@@ -307,12 +307,12 @@ namespace HWC.DataModel
         [Required]
         [ForeignKey("FK_UserCoupon_User_UserID")]
         [Column("UserID")]
-        public int UserID { get; set; }                                 // FOREIGN Key to -> User:UserID
+        public long UserID { get; set; }                                // FOREIGN Key to -> User:UserID
 
         [Required]
         [ForeignKey("FK_UserCoupon_Coupon_CouponID")]
         [Column("CouponID")]
-        public int CouponID { get; set; }                               // FOREIGN Key to -> Coupon:CouponID
+        public long CouponID { get; set; }                              // FOREIGN Key to -> Coupon:CouponID
 
         [Required]
         [Column("VisitedAt")]
@@ -345,12 +345,12 @@ namespace HWC.DataModel
 
     public class DisplaySession
     {
-        public int DisplayEndpointID { get; set; }                      // UNIQUE Key; FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
+        public long DisplayEndpointID { get; set; }                     // UNIQUE Key; FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
         public DateTime? NotificationsInvokedAt { get; set; }
         public DateTime? ExpireNotificationsAt { get; set; }
         public bool DisplayTouched { get; set; }
         public DateTime? DisplayTouchedAt { get; set; }
-        public int? TouchedNotificationID { get; set; }                 // FOREIGN Key to -> Notification:NotificationID
+        public long? TouchedNotificationID { get; set; }                // FOREIGN Key to -> Notification:NotificationID
     }
 
     [DynamoDBTable("ZoneConcurrentList")]
@@ -365,7 +365,7 @@ namespace HWC.DataModel
 
     public class ZoneSession
     {
-        public int ZoneID { get; set; }                                 // UNIQUE Key; FOREIGN Key to -> Zone:ZoneID
+        public long ZoneID { get; set; }                                // UNIQUE Key; FOREIGN Key to -> Zone:ZoneID
         public UserConcurrentList UserConcurrentList { get; set; }
     }
 
@@ -377,10 +377,10 @@ namespace HWC.DataModel
 
     public class UserSession
     {
-        public int UserID { get; set; }                                 // UNIQUE Key; FOREIGN Key to -> User:UserID
+        public long UserID { get; set; }                                // UNIQUE Key; FOREIGN Key to -> User:UserID
         public DateTime? EnteredIntoZoneAt { get; set; }
         public DateTime? LastSeenInZoneAt { get; set; }
-        public List<int> ReceivedCouponIDs { get; set; }                // For each item FOREIGN Key to -> Coupon:CouponID
+        public List<long> ReceivedCouponIDs { get; set; }               // For each item FOREIGN Key to -> Coupon:CouponID
     }
 
     #endregion
