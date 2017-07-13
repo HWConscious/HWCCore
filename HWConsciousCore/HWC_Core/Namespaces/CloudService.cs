@@ -28,7 +28,7 @@ namespace HWC.CloudService
         public static int DisplaySessionTouchTimeoutThreshold = 5;
 
         // Timeout threshold for UserSession in a Zone. Value in seconds.
-        public static int UserSessionZoneTimeoutThreshold = 5;
+        public static int UserSessionZoneTimeoutThreshold = 12;
 
         /// <summary>
         /// Representation of DataClient configuration
