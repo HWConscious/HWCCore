@@ -116,13 +116,13 @@ namespace HWC.DataModel
         [Required]
         [EnumDataType(typeof(LocationDeviceType))]
         [Column("Type")]
-        [Range(1, 1)]
+        [Range(0, 1)]
         public LocationDeviceType Type { get; set; }
 
         [Required]
         [Column("DeviceID")]
         [StringLength(200, MinimumLength = 1)]
-        public string DeviceID { get; set; }
+        public string DeviceID { get; set; }                            // UNIQUE Key
 
         // Navigation Properties
         public ClientSpot ClientSpot { get; set; }
@@ -189,9 +189,10 @@ namespace HWC.DataModel
         public bool Active { get; set; }
 
         [Required]
+        [EnumDataType(typeof(MimeType))]
         [Column("ContentMimeType")]
-        [StringLength(50, MinimumLength = 3)]
-        public string ContentMimeType { get; set; }
+        [Range(0, 3)]
+        public MimeType ContentMimeType { get; set; }
 
         [Required]
         [Column("ContentSubject")]
@@ -263,7 +264,7 @@ namespace HWC.DataModel
         [Required]
         [EnumDataType(typeof(UserType))]
         [Column("Type")]
-        [Range(1, 2)]
+        [Range(0, 2)]
         public UserType Type { get; set; }
 
         [Column("Name")]
@@ -272,7 +273,7 @@ namespace HWC.DataModel
 
         [Column("Email")]
         [StringLength(50, MinimumLength = 3)]
-        public string Email { get; set; }
+        public string Email { get; set; }                               // UNIQUE Key
     }
 
     #endregion
@@ -404,11 +405,11 @@ namespace HWC.DataModel
             modelBuilder.Entity<Client>();
             modelBuilder.Entity<ClientSpot>();
             modelBuilder.Entity<Zone>();
-            modelBuilder.Entity<LocationDevice>();
+            modelBuilder.Entity<LocationDevice>().HasIndex(lD => lD.DeviceID).IsUnique();
             modelBuilder.Entity<DisplayEndpoint>();
             modelBuilder.Entity<Notification>();
             modelBuilder.Entity<Coupon>();
-            modelBuilder.Entity<User>();
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
             // Transactional Data Tables
             modelBuilder.Entity<ClientUser>().HasKey(e => new { e.ClientID, e.UserID, e.VisitedAt });
