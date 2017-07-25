@@ -347,11 +347,11 @@ namespace HWC.DataModel
     public class DisplaySession
     {
         public long DisplayEndpointID { get; set; }                     // UNIQUE Key; FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
-        public DateTime? NotificationsInvokedAt { get; set; }
-        public DateTime? ExpireNotificationsAt { get; set; }
-        public bool DisplayTouched { get; set; }
+        public bool IsUserExists { get; set; }
+        public long? BufferedShowNotificationID { get; set; }           // FOREIGN Key to -> Notification:NotificationID
+        public DateTime? CurrentShowNotificationExpireAt { get; set; }
+        public long? DisplayTouchedNotificationID { get; set; }         // FOREIGN Key to -> Notification:NotificationID
         public DateTime? DisplayTouchedAt { get; set; }
-        public long? TouchedNotificationID { get; set; }                // FOREIGN Key to -> Notification:NotificationID
     }
 
     [DynamoDBTable("ZoneConcurrentList")]

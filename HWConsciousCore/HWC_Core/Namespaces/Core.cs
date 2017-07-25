@@ -61,7 +61,7 @@ namespace HWC.Core
         public EventType Type { get; set; }
         public DateTime EventAtTimestamp { get; set; }
         public EventSourceType SourceType { get; set; }
-        public int SourceID { get; set; }
+        public long SourceID { get; set; }
         public string Message { get; set; }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace HWC.Core
         /// <param name="eventAtTimestamp">The DateTime when the Event occurred</param>
         /// <param name="sourceType">Specifies the origin of this event. For example, Notification, User etc.</param>
         /// <param name="sourceID">The identifier for the origin source of the event. For example, if the event occurred at the Notification level, the identifier would be the NotificationID.</param>
-        public Event(EventType type, DateTime eventAtTimestamp, EventSourceType sourceType, int sourceID)
+        public Event(EventType type, DateTime eventAtTimestamp, EventSourceType sourceType, long sourceID)
         {
             Type = type;
             EventAtTimestamp = eventAtTimestamp;
