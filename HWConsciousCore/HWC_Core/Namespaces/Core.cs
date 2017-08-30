@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 /// <summary>
 /// Namespace for Core objects
@@ -131,6 +136,88 @@ namespace HWC.Core
         None = 0,
         Notification = 1,
         User = 2
+    }
+
+    #endregion
+
+    #region Utility Models
+
+    /// <summary>
+    /// Special JsonConvert resolver that allows to ignore properties.
+    /// </summary>
+    public class IgnorableSerializerContractResolver : DefaultContractResolver
+    {
+        private JsonSerializerSettings _serializerSettings;
+        protected readonly Dictionary<Type, HashSet<string>> Ignores;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public IgnorableSerializerContractResolver()
+        {
+            Ignores = new Dictionary<Type, HashSet<string>>();
+            _serializerSettings = new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = this
+            };
+        }
+
+        /// <summary>
+        /// Explicitly ignore the given property(s) for the given type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="propertyName">One or more properties to ignore.</param>
+        public void Ignore(Type type, params string[] propertyName)
+        {
+            // Create bucket for the type if doesn't exist
+            if (!Ignores.ContainsKey(type)) { Ignores[type] = new HashSet<string>(StringComparer.OrdinalIgnoreCase); }
+
+            foreach (var property in propertyName)
+            {
+                if (!Ignores[type].Contains(property)) { Ignores[type].Add(property); }
+            }
+        }
+
+        /// <summary>
+        /// Is the given property for the given type ignored?
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="propertyName">Property to check</param>
+        /// <returns></returns>
+        public bool IsIgnored(Type type, string propertyName)
+        {
+            if (!Ignores.ContainsKey(type)) { return false; }
+
+            return Ignores[type].Contains(propertyName);
+        }
+
+        /// <summary>
+        /// Logic to exclude properties when serializing.
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="memberSerialization"></param>
+        /// <returns></returns>
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+            if (IsIgnored(property.DeclaringType, property.PropertyName))
+            {
+                property.ShouldSerialize = instance => { return false; };
+            }
+
+            return property;
+        }
+
+        /// <summary>
+        /// Get the serializer settings.
+        /// </summary>
+        /// <returns></returns>
+        public JsonSerializerSettings GetSerializerSettings()
+        {
+            return _serializerSettings;
+        }
     }
 
     #endregion
