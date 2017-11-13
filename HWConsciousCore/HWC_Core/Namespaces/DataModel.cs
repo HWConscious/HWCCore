@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 using HWC.Core;
@@ -19,6 +21,8 @@ namespace HWC.DataModel
     [Table("Client")]
     public class Client
     {
+        #region Database Properties
+
         [Key]
         public long ClientID { get; set; }                              // PRIMARY Key
 
@@ -37,13 +41,20 @@ namespace HWC.DataModel
         [StringLength(50, MinimumLength = 3)]
         public string PhoneNumber { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public List<ClientSpot> ClientSpots { get; set; }
+
+        #endregion
     }
 
     [Table("ClientSpot")]
     public class ClientSpot
     {
+        #region Database Properties
+
         [Key]
         public long ClientSpotID { get; set; }                          // PRIMARY Key
 
@@ -67,18 +78,25 @@ namespace HWC.DataModel
         [StringLength(50, MinimumLength = 3)]
         public string PhoneNumber { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public Client Client { get; set; }
         public List<Zone> Zones { get; set; }
         public List<LocationDevice> LocationDevices { get; set; }
         public List<DisplayEndpoint> DisplayEndpoints { get; set; }
         public List<Notification> Notifications { get; set; }
         public List<Coupon> Coupons { get; set; }
+
+        #endregion
     }
 
     [Table("Zone")]
     public class Zone
     {
+        #region Database Properties
+
         [Key]
         public long ZoneID { get; set; }                                // PRIMARY Key
 
@@ -92,15 +110,22 @@ namespace HWC.DataModel
         [StringLength(50, MinimumLength = 3)]
         public string Name { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public ClientSpot ClientSpot { get; set; }
         public List<LocationDevice> LocationDevices { get; set; }
         public List<DisplayEndpoint> DisplayEndpoints { get; set; }
+
+        #endregion
     }
 
     [Table("LocationDevice")]
     public class LocationDevice
     {
+        #region Database Properties
+
         [Key]
         public long LocationDeviceID { get; set; }                      // PRIMARY Key
 
@@ -124,14 +149,22 @@ namespace HWC.DataModel
         [StringLength(200, MinimumLength = 1)]
         public string DeviceID { get; set; }                            // UNIQUE Key
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public ClientSpot ClientSpot { get; set; }
         public Zone Zone { get; set; }
+        public List<LocationDeviceNotification> LocationDeviceNotifications { get; set; }
+
+        #endregion
     }
 
     [Table("DisplayEndpoint")]
     public class DisplayEndpoint
     {
+        #region Database Properties
+
         [Key]
         public long DisplayEndpointID { get; set; }                     // PRIMARY Key
 
@@ -149,15 +182,22 @@ namespace HWC.DataModel
         [StringLength(50, MinimumLength = 3)]
         public string Name { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public ClientSpot ClientSpot { get; set; }
         public Zone Zone { get; set; }
-        public List<Notification> Notifications { get; set; }
+        public List<DisplayEndpointNotification> DisplayEndpointNotifications { get; set; }
+
+        #endregion
     }
 
     [Table("Notification")]
     public class Notification
     {
+        #region Database Properties
+
         [Key]
         public long NotificationID { get; set; }                        // PRIMARY Key
 
@@ -166,10 +206,6 @@ namespace HWC.DataModel
         [Column("ClientSpotID")]
         public long ClientSpotID { get; set; }                          // FOREIGN Key to -> ClientSpot:ClientSpotID
 
-        [ForeignKey("FK_Notification_DisplayEndpoint_DisplayEndpointID")]
-        [Column("DisplayEndpointID")]
-        public long? DisplayEndpointID { get; set; }                    // FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
-
         [Required]
         [Column("Name")]
         [StringLength(50, MinimumLength = 3)]
@@ -177,7 +213,7 @@ namespace HWC.DataModel
 
         [Column("SortOrder")]
         [Range(0, 50)]
-        public int SortOrder { get; set; }
+        public int? SortOrder { get; set; }
 
         [Required]
         [Column("Timeout")]
@@ -187,6 +223,10 @@ namespace HWC.DataModel
         [Required]
         [Column("Active")]
         public bool Active { get; set; }
+
+        [Required]
+        [Column("ShowProgressBar")]
+        public bool ShowProgressBar { get; set; }
 
         [Required]
         [EnumDataType(typeof(MimeType))]
@@ -208,15 +248,84 @@ namespace HWC.DataModel
         [StringLength(200, MinimumLength = 1)]
         public string ContentBody { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public ClientSpot ClientSpot { get; set; }
-        public DisplayEndpoint DisplayEndpoint { get; set; }
         public List<Coupon> Coupons { get; set; }
+        public List<LocationDeviceNotification> LocationDeviceNotifications { get; set; }
+        public List<DisplayEndpointNotification> DisplayEndpointNotifications { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public Notification()
+        {
+            // Set default values
+            Active = true;
+            ShowProgressBar = true;
+        }
+
+        #endregion
+    }
+
+    [Table("LocationDeviceNotification")]
+    public class LocationDeviceNotification
+    {
+        #region Database Properties
+
+        [Required]
+        [ForeignKey("FK_LocationDeviceNotification_LocationDevice_LocationDeviceID")]
+        [Column("LocationDeviceID")]
+        public long LocationDeviceID { get; set; }                      // UNIQUE Key; FOREIGN Key to -> LocationDevice:LocationDeviceID
+
+        [Required]
+        [ForeignKey("FK_LocationDeviceNotification_Notification_NotificationID")]
+        [Column("NotificationID")]
+        public long NotificationID { get; set; }                        // UNIQUE Key; FOREIGN Key to -> Notification:NotificationID
+
+        #endregion
+
+        #region Navigation Properties
+
+        public LocationDevice LocationDevice { get; set; }
+        public Notification Notification { get; set; }
+
+        #endregion
+    }
+
+    [Table("DisplayEndpointNotification")]
+    public class DisplayEndpointNotification
+    {
+        #region Database Properties
+
+        [Required]
+        [ForeignKey("FK_DisplayEndpointNotification_DisplayEndpoint_DisplayEndpointID")]
+        [Column("DisplayEndpointID")]
+        public long DisplayEndpointID { get; set; }                     // FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
+
+        [Required]
+        [ForeignKey("FK_DisplayEndpointNotification_Notification_NotificationID")]
+        [Column("NotificationID")]
+        public long NotificationID { get; set; }                        // UNIQUE Key; FOREIGN Key to -> Notification:NotificationID
+
+        #endregion
+
+        #region Navigation Properties
+
+        public DisplayEndpoint DisplayEndpoint { get; set; }
+        public Notification Notification { get; set; }
+
+        #endregion
     }
 
     [Table("Coupon")]
     public class Coupon
     {
+        #region Database Properties
+
         [Key]
         public long CouponID { get; set; }                              // PRIMARY Key
 
@@ -250,17 +359,24 @@ namespace HWC.DataModel
         [Range(0, 10000000)]
         public double DiscountCents { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public ClientSpot ClientSpot { get; set; }
         public Notification Notification { get; set; }
+
+        #endregion
     }
 
     [Table("User")]
     public class User
     {
+        #region Database Properties
+
         [Key]
         public long UserID { get; set; }                                // PRIMARY Key
-        
+
         [Required]
         [EnumDataType(typeof(UserType))]
         [Column("Type")]
@@ -274,6 +390,8 @@ namespace HWC.DataModel
         [Column("Email")]
         [StringLength(50, MinimumLength = 3)]
         public string Email { get; set; }                               // UNIQUE Key
+
+        #endregion
     }
 
     #endregion
@@ -283,6 +401,8 @@ namespace HWC.DataModel
     [Table("ClientUser")]
     public class ClientUser
     {
+        #region Database Properties
+
         [Required]
         [ForeignKey("FK_ClientUser_Client_ClientID")]
         [Column("ClientID")]
@@ -297,14 +417,31 @@ namespace HWC.DataModel
         [Column("VisitedAt")]
         public DateTime VisitedAt { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public Client Client { get; set; }
         public User User { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public ClientUser()
+        {
+            // Set default values
+            VisitedAt = DateTime.UtcNow;
+        }
+
+        #endregion
     }
 
     [Table("UserCoupon")]
     public class UserCoupon
     {
+        #region Database Properties
+
         [Required]
         [ForeignKey("FK_UserCoupon_User_UserID")]
         [Column("UserID")]
@@ -318,13 +455,29 @@ namespace HWC.DataModel
         [Required]
         [Column("VisitedAt")]
         public DateTime ReceivedAt { get; set; }
-        
+
         [Column("CouponRedempted")]
         public bool CouponRedempted { get; set; }
 
-        // Navigation Properties
+        #endregion
+
+        #region Navigation Properties
+
         public User User { get; set; }
         public Coupon Coupon { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public UserCoupon()
+        {
+            // Set default values
+            ReceivedAt = DateTime.UtcNow;
+            CouponRedempted = false;
+        }
+
+        #endregion
     }
 
     #endregion
@@ -334,6 +487,8 @@ namespace HWC.DataModel
     [DynamoDBTable("DisplayConcurrentList")]
     public class DisplayConcurrentList
     {
+        #region Database Properties
+
         [DynamoDBHashKey]
         public Guid ID { get; set; }                                    // PRIMARY Key
 
@@ -342,46 +497,225 @@ namespace HWC.DataModel
 
         [DynamoDBProperty("LastFlushedAt")]
         public DateTime? LastFlushedAt { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public DisplayConcurrentList()
+        {
+            // Set default values
+            ID = Guid.NewGuid();
+            DisplaySessions = new List<DisplaySession>();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets a DisplaySession or creates new if not exists
+        /// </summary>
+        /// <param name="displayEndpointID">DisplayEndpoint ID</param>
+        /// <returns></returns>
+        public DisplaySession ObtainDisplaySession(long displayEndpointID)
+        {
+            DisplaySession displaySession = null;
+
+            // Try to get the DisplayEndpoint's respective DisplaySession from DisplayConcurrentList, create new if not exists.
+            displaySession = DisplaySessions?
+                .Where(dS => dS.DisplayEndpointID == displayEndpointID)
+                .FirstOrDefault();
+            if (displaySession == null)
+            {
+                // Create a new DisplaySession for the DisplayEndpoint and add to DisplaySessions
+                DisplaySessions.Add(displaySession = new DisplaySession(displayEndpointID));
+            }
+
+            return displaySession;
+        }
+
+        #endregion
     }
 
     public class DisplaySession
     {
+        #region Database Properties
+
         public long DisplayEndpointID { get; set; }                     // UNIQUE Key; FOREIGN Key to -> DisplayEndpoint:DisplayEndpointID
         public bool IsUserExists { get; set; }
         public long? BufferedShowNotificationID { get; set; }           // FOREIGN Key to -> Notification:NotificationID
         public DateTime? CurrentShowNotificationExpireAt { get; set; }
         public long? DisplayTouchedNotificationID { get; set; }         // FOREIGN Key to -> Notification:NotificationID
         public DateTime? DisplayTouchedAt { get; set; }
+        public long? LocationDeviceID { get; set; }					    // FOREIGN Key to -> LocationDevice:LocationDeviceID
+        public DateTime? LocationDeviceRegisteredAt { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public DisplaySession() { }
+
+        public DisplaySession(long displayEndpointID)
+        {
+            DisplayEndpointID = displayEndpointID;
+        }
+
+        #endregion
     }
 
     [DynamoDBTable("ZoneConcurrentList")]
     public class ZoneConcurrentList
     {
+        #region Database Properties
+
         [DynamoDBHashKey]
         public Guid ID { get; set; }                                    // PRIMARY Key
 
         [DynamoDBProperty("ZoneSessions")]
         public List<ZoneSession> ZoneSessions { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public ZoneConcurrentList()
+        {
+            // Set default values
+            ID = Guid.NewGuid();
+            ZoneSessions = new List<ZoneSession>();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets a ZoneSession or creates new if not exists
+        /// </summary>
+        /// <param name="zoneID">Zone ID</param>
+        /// <returns></returns>
+        public ZoneSession ObtainZoneSession(long zoneID)
+        {
+            ZoneSession zoneSession = null;
+
+            // Try to get the Zone's respective ZoneSession from ZoneConcurrentList, create new if not exists.
+            zoneSession = ZoneSessions?
+                .Where(zS => zS.ZoneID == zoneID)
+                .FirstOrDefault();
+            if (zoneSession == null)
+            {
+                // Create a new ZoneSession for the Zone and add to ZoneSessions
+                ZoneSessions.Add(zoneSession = new ZoneSession(zoneID));
+            }
+
+            return zoneSession;
+        }
+
+        #endregion
     }
 
     public class ZoneSession
     {
+        #region Database Properties
+
         public long ZoneID { get; set; }                                // UNIQUE Key; FOREIGN Key to -> Zone:ZoneID
         public UserConcurrentList UserConcurrentList { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public ZoneSession()
+        {
+            // Set default values
+            UserConcurrentList = new UserConcurrentList();
+        }
+
+        public ZoneSession(long zoneID)
+        {
+            ZoneID = zoneID;
+            // Set default values
+            UserConcurrentList = new UserConcurrentList();
+        }
+
+        #endregion
     }
 
     public class UserConcurrentList
     {
+        #region Database Properties
+
         public List<UserSession> UserSessions { get; set; }
         public DateTime? LastFlushedAt { get; set; }
+
+        #endregion
+
+        #region Initialize
+
+        public UserConcurrentList()
+        {
+            // Set default values
+            UserSessions = new List<UserSession>();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets an UserSession or creates new if not exists
+        /// </summary>
+        /// <param name="userID">User ID</param>
+        /// <returns></returns>
+        public UserSession ObtainUserSession(long userID)
+        {
+            UserSession userSession = null;
+
+            // Try to get the User's respective UserSession from UserConcurrentList, create new if not exists.
+            userSession = UserSessions?
+                .Where(uS => uS.UserID == userID)
+                .FirstOrDefault();
+            if (userSession == null)
+            {
+                // Create new UserSession for the User and add to UserSessions
+                UserSessions.Add(userSession = new UserSession(userID));
+            }
+
+            return userSession;
+        }
+
+        #endregion
     }
 
     public class UserSession
     {
+        #region Database Properties
+
         public long UserID { get; set; }                                // UNIQUE Key; FOREIGN Key to -> User:UserID
         public DateTime? EnteredIntoZoneAt { get; set; }
         public DateTime? LastSeenInZoneAt { get; set; }
         public List<long> ReceivedCouponIDs { get; set; }               // For each item FOREIGN Key to -> Coupon:CouponID
+
+        #endregion
+
+        #region Initialize
+
+        public UserSession()
+        {
+            // Set default values
+            ReceivedCouponIDs = new List<long>();
+        }
+
+        public UserSession(long userID)
+        {
+            UserID = userID;
+            // Set default values
+            ReceivedCouponIDs = new List<long>();
+        }
+
+        #endregion
     }
 
     #endregion
@@ -408,6 +742,11 @@ namespace HWC.DataModel
             modelBuilder.Entity<LocationDevice>().HasIndex(lD => lD.DeviceID).IsUnique();
             modelBuilder.Entity<DisplayEndpoint>();
             modelBuilder.Entity<Notification>();
+            modelBuilder.Entity<LocationDeviceNotification>().HasKey(lDN => new { lDN.LocationDeviceID, lDN.NotificationID });
+            modelBuilder.Entity<LocationDeviceNotification>().HasIndex(lDN => lDN.LocationDeviceID).IsUnique();
+            modelBuilder.Entity<LocationDeviceNotification>().HasIndex(lDN => lDN.NotificationID).IsUnique();
+            modelBuilder.Entity<DisplayEndpointNotification>().HasKey(dEN => new { dEN.DisplayEndpointID, dEN.NotificationID });
+            modelBuilder.Entity<DisplayEndpointNotification>().HasIndex(dEN => dEN.NotificationID).IsUnique();
             modelBuilder.Entity<Coupon>();
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
@@ -434,16 +773,26 @@ namespace HWC.DataModel
     /// </summary>
     public class ConfigurationData : RdsDbContext
     {
+        #region Data Members
+
         public DbSet<Client> Clients { get; set; }
         public DbSet<ClientSpot> ClientSpots { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<LocationDevice> LocationDevices { get; set; }
         public DbSet<DisplayEndpoint> DisplayEndpoints { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<LocationDeviceNotification> LocationDeviceNotifications { get; set; }
+        public DbSet<DisplayEndpointNotification> DisplayEndpointNotifications { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<User> Users { get; set; }
 
+        #endregion
+
+        #region Initialize
+
         public ConfigurationData(DbContextOptions<RdsDbContext> options) : base(options) { }
+
+        #endregion
     }
 
     /// <summary>
@@ -451,10 +800,18 @@ namespace HWC.DataModel
     /// </summary>
     public class TransactionalData : RdsDbContext
     {
+        #region Data Members
+
         public DbSet<ClientUser> ClientUsers { get; set; }
         public DbSet<UserCoupon> UserCoupons { get; set; }
 
+        #endregion
+
+        #region Initialize
+
         public TransactionalData(DbContextOptions<RdsDbContext> options) : base(options) { }
+
+        #endregion
     }
 
     /// <summary>
@@ -462,8 +819,59 @@ namespace HWC.DataModel
     /// </summary>
     public class TransientData : NosqlDbContext
     {
+        #region Data Members
+
+        private DisplayConcurrentList _displayConcurrentList { get; set; }
+        private ZoneConcurrentList _zoneConcurrentList { get; set; }
+
+        #endregion
+
+        #region Initialize
+
         public TransientData(AmazonDynamoDBClient client, DynamoDBContextConfig config) : base(client, config) { }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets freshly scanned DisplayConcurrentList or creates new if not exists
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DisplayConcurrentList> ObtainDisplayConcurrentListAsync()
+        {
+            return _displayConcurrentList = (await ScanAsync<DisplayConcurrentList>(null)?.GetNextSetAsync())?.FirstOrDefault() ?? new DisplayConcurrentList();
+        }
+
+        /// <summary>
+        /// Gets freshly scanned ZoneConcurrentList or creates new if not exists
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ZoneConcurrentList> ObtainZoneConcurrentListAsync()
+        {
+            return _zoneConcurrentList = (await ScanAsync<ZoneConcurrentList>(null)?.GetNextSetAsync())?.FirstOrDefault() ?? new ZoneConcurrentList();
+        }
+
+        /// <summary>
+        /// Saves DisplayConcurrentList
+        /// </summary>
+        /// <returns></returns>
+        public async Task SaveDisplayConcurrentListAsync()
+        {
+            if (_displayConcurrentList != null) { await SaveAsync(_displayConcurrentList); }
+        }
+
+        /// <summary>
+        /// Saves ZoneConcurrentList
+        /// </summary>
+        /// <returns></returns>
+        public async Task SaveZoneConcurrentListAsync()
+        {
+            if (_zoneConcurrentList != null) { await SaveAsync(_zoneConcurrentList); }
+        }
+
+        #endregion
     }
 
-    #endregion
+#endregion
 }
